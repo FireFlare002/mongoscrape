@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 var request = require('request'); 
 var cheerio = require('cheerio');
 
-// use morgan and bodyparser with our app
+// use morgan and bodyparser 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
   extended: false
@@ -51,19 +51,23 @@ app.get('/', function(req, res) {
 // A GET request to scrape the  website.
 app.get('/scrape', function(req, res) {
 	// first, we grab the body of the html with request
-  request('http://www.cnn.com/', function(error, response, html) {
+  request('https://www.reddit.com/', function(error, response, html) {
   	// then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
+
+		//console.log(html);
     // now, we grab every post and do the following:
-    $('div.post').each(function(i, element) {
+    $('a.title').each(function(i, element) {
 
     		// save an empty result object
 				var result = {};
 				// add the text and href of every link, 
 				// and save them as properties of the result obj
-				result.title = $(this).children('a').text();
-				result.paragraph = $(this).children('p').text();
-				result.link = $(this).children('a').attr('href');
+				result.title = $(this).text();
+				result.paragraph = $(this).text();
+				result.link = $(this).attr('href');
+
+				console.log("Article: " + i);
 				// using our Article model, create a new entry.
 				// Notice the (result):
 				// This effectively passes the result object to the entry (and the title and link)
